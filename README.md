@@ -1,110 +1,155 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+family-shopper
+A bespoke shopping list management app developed using django and a variety of other technologies especially for the Hyland family.
 
-Welcome USER_NAME,
+Code Institute - Fourth Milestone Project: Build a Full-Stack site based on the business logic used to control a centrally-owned dataset (in this case, the data used by the Hyland family to organise their household grocery shopping). Set up an authentication mechanism (for one superuser, an "adult" and a "child" role) and provide appropriate access to the site's data, allowing each role to do activities appropriate to that role, based on the dataset.
 
-This is the Code Institute student template for Gitpod. We have preinstalled all of the tools you need to get started. It's perfectly ok to use this template as the basis for your project submissions.
+Image of a H. x intermedia 'Arnold Promise' in mid-October
 
-You can safely delete this README.md file, or change it for your own project. Please do read it at least once, though! It contains some important information about Gitpod and the extensions we use. Some of this information has been updated since the video content was created. The last update to this file was: **September 1, 2021**
+A very common cultivar of H. x intermedia ('Arnold Promise') giving a spectacular show of leaf colour in mid-October
 
-## Gitpod Reminders
+## The user story
 
-To run a frontend (HTML, CSS, Javascript only) application in Gitpod, in the terminal, type:
+The Hyland family is a four-headed monster that consumes a shocking lot of groceries (especially chocolate) every week. The main shopper in the family (the father of the household ... me) does his best but often finds it difficult to keep track of what's in stock and what's not.  The other three family members (the mother of the household, Annett and the two children, Lily and Jim) often tell him what from their point of view is missing and what new purchases might be appreciated.  They also occasionally do a bit of shopping too!
 
-`python3 -m http.server`
+Since I'm currently learning full-stack programming with Code Institute and am required by my course to complete a Full-Stack Web application for my fourth portfolio project, I thought this requirement would provide a good opportunity to develop a basic prototype (or minimally viable product - MVP) of a shopping list app designed specifically for our family needs, for further development at a later date. The objective of this project is therefore to create just such a MVP.
 
-A blue button should appear to click: _Make Public_,
 
-Another blue button should appear to click: _Open Browser_.
+System design
 
-To run a backend Python file, type `python3 app.py`, if your Python file is named `app.py` of course.
+Some flow charts portraying a selection of important witch-hazel worklflows
 
-A blue button should appear to click: _Make Public_,
+Accordingly, I prepared a series of outline flow charts in consultation with Laura and Donal on the basis of the needs they described to me. Once they'd approved the charts, I began thinking about actually programming the various functionalities.
 
-Another blue button should appear to click: _Open Browser_.
+For simplicity's sake, and because I thought the data was not enormously complex, I decided to store it all on a single google spreadsheet, which I simply named 'hamamelis'. It contains three worksheets.
 
-In Gitpod you have superuser security privileges by default. Therefore you do not need to use the `sudo` (superuser do) command in the bash terminal in any of the lessons.
+rootstock
+grafts-year-zero
+plants
+The data should be read as follows.
 
-To log into the Heroku toolbelt CLI:
+The 'rootstock' worksheet
+The first column (A) is a label to tell the witch-hazel program what year the figures in the corresponding row refer to. The current year is at the top.
+The top figure in the second column (B) shows the number of cuttings that the couple plan to take in the autumn of the current year minus one. The figures below that represent the number of cuttings that the couple planned to take in each relevant year minus one in the past.
+The third column (C) shows the number of cuttings that they actually took in the relevant year.
+The fourth column (D) shows the number of cuttings that rooted successfully and were potted up during the spring. It is a representation of work done, and does not increase when immature rootstocks are acquired from an outside source, nor does it reduce when such rootstocks are lost through disease or damage, or when they are used up to in the grafting process. Notice the change in nomenclature: successfully rooted cuttings begin to be referred to as rootstocks as soon as they've planted in pots (potted up).
+The fifth column (E) contains at most two non-zero values: one in E1, which represents the figure for rootstocks in stock this year to become available for use as next year as rootstocks. It is equivalent to the value in D1 minus any losses and plus any acquisitions. The value in E2 represents the total number of rootstocks now available for use in this year's grafting. Every time a grafting session is recorded, this value goes down by the number of grafts made. Any rootstocks left over after the year's grafting campaign is finished remain in the system until they are set to zero upon creation of a new year. The reason for this is that two-year-old rootstocks will rarely be suitable for grafting when the time comes around again in the new year. They are generally physically disposed of (recycling the pots and compost) when the opportunity arises during the course of the new year. The rootstock worksheet the end of a year
+The rootstock worksheet as it might look towards the end of a growing year
 
-1. Log in to your Heroku account and go to *Account Settings* in the menu under your avatar.
-2. Scroll down to the *API Key* and click *Reveal*
-3. Copy the key
-4. In Gitpod, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
+The 'grafts-year-zero' worksheet
+The grafts-year-zero worksheet contains two more columns than the number of cultivars of Hamamelis currently cultivated by the Witch Hazel nursery.
 
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you so do not share it. If you accidentally make it public then you can create a new one with _Regenerate API Key_.
+The first column identifies the year to which the data in the corresponding row refers.
+The second column tells any human or machine reader whether the figures in the corresponding row refer to numbers of grafted plants that the couple originally planned ('planned'), that they actually made ('grafted') and that they currently have in stock ('stock'). The 'stock' figure for the current year refers to the number of plants of the given category currently in stock (i.e., the number of grafts originally made of the relevant cultivar in the current year minus any losses recorded since then, plus any gains since then). When a new year is created, the relevant numbers are passed into the 'plants' worksheet, three new rows are created for the current year and the figures for 'planned' and 'grafted' for previous years can no longer be edited.
+Each subsequent column gives the figures described above for the cultivar labelled in the topmost cell. The grafts-year-zero worksheet the end of a year
+The grafts-year-zero worksheet as it might look towards the end of a growing year
 
-------
+The 'plants' worksheet
+The plants worksheet is a little simpler. It shows the current stocks of each cultivar of each age group – i.e.: the total number of grafts of that age currently in stock, adjusted according to the losses and gains subsequently recorded by the couple in the witch-hazel program using the record_loss, record_gain, hold_back and bring_forward functions (see below). The plants worksheet towards the end of a year
 
-## Release History
+The plants worksheet as it might look towards the end of a growing year
 
-We continually tweak and adjust this template to help give you the best experience. Here is the version history:
+The program's original workflow and the technical issues with the technology used
+At the outset of programming, I wanted the app to call a run.py file in the usual way but to attach an argument after a blank space on the command line, depending on the task that the user wished to do at that time. Unfortunately, the Heroku pseudo terminal on which the app is destined to run does not allow the use of command-line arguments (or at least I have been unable to find a way of implementing such a command-line-argument-based design). Due to some issues with my implementation of the Heroku architecture, I discovered this limitation rather late in the day. As a result I was forced redesign the app at the last-minuteto follow a different (and in my opinion much less elegant) logic. Originally, the user would have typed the run.py file name on the terminal, followed by a space and then a short string indicating what they wanted the app to do.
 
-**September 20 2023:** Update Python version to 3.9.17.
+For example, they would have typed run.py plan_cuttings to plan their campaign of taking and preparing cuttings. But the Heroku pseudo-terminal automatically runs the run.py file without any arguments immediately upon opening, so everything must be based on an argument-free initial call. The description of the workflow below is based on my last-minute changes due to this difficulty. It should be understood, however, that workflow described below was not my first choice.
 
-**September 1 2021:** Remove `PGHOSTADDR` environment variable.
+The time used dealing with this problem at the last minute may have affected some of the finishing work on the program. For example, it was my original intention to connect each task to the next in their logical order, asking the user if they wished to go on to the next task. Sadly, the user now needs to restart the program every time they wish to complete a new task.
 
-**July 19 2021:** Remove `font_fix` script now that the terminal font issue is fixed.
+The program's workflow:
+Seasonal tasks in order
+Typically towards the autumn of every year, the owners will want to close out the figures they have entered over the previous year, begin a new year and start work on planning their campaign of taking H. Virginiana cuttings. They begin this task by running the app and choosing option 1 (Create new year/Close out current year). This function adds the required new lines for the new current year on each worksheet, and copies the data on graft stocks for the old current year to date from the grafts-year-zero worksheet to the plants worksheet. This has the effect of putting the data for the previous year out of reach of the seasonal tasks.
 
-**July 2 2021:** Remove extensions that are not available in Open VSX.
+Also within the Create new year/Close out current year function, users can choose either to enter the figure for cuttings that they anticipate taking this year or opt to leave that job for later.
 
-**June 30 2021:** Combined the P4 and P5 templates into one file, added the uptime script. See the FAQ at the end of this file.
+The rootstock worksheet straight after the user executes the  function
 
-**June 10 2021:** Added: `font_fix` script and alias to fix the Terminal font issue
+The rootstock worksheet straight after the user executes the Create new year/Close out current year function. Note that the user has chosen to enter a value for planned cuttings of 2800. That value can be changed at any time during the year by running Option 2 Plan this year's cutting campaign.
 
-**May 10 2021:** Added `heroku_config` script to allow Heroku API key to be stored as an environment variable.
+The grafts-year-zero worksheet straight after the user executes the  function
 
-**April 7 2021:** Upgraded the template for VS Code instead of Theia.
+The grafts-year-zero worksheet straight after the user executes the Create new year/Close out current year function.
 
-**October 21 2020:** Versions of the HTMLHint, Prettier, Bootstrap4 CDN and Auto Close extensions updated. The Python extension needs to stay the same version for now.
+The plants worksheet straight after the user executes the  function
 
-**October 08 2020:** Additional large Gitpod files (`core.mongo*` and `core.python*`) are now hidden in the Explorer, and have been added to the `.gitignore` by default.
+The plants worksheet straight after the user executes the Create new year/Close out current year function.
 
-**September 22 2020:** Gitpod occasionally creates large `core.Microsoft` files. These are now hidden in the Explorer. A `.gitignore` file has been created to make sure these files will not be committed, along with other common files.
+Then, whether or not they have entered a figure for planned cuttings, they can run app option 2 Plan this year's cutting campaign to revise that figure. If they have already recorded a figure for cuttings actually made, they are given a warning to tell them that the cutting campaign has already started and asked to confirm whether they want to replace the planned figure with a new total. The new figure is not added to the old one; it simply replaced it. This is the case with all planning functions.
 
-**April 16 2020:** The template now automatically installs MySQL instead of relying on the Gitpod MySQL image. The message about a Python linter not being installed has been dealt with, and the set-up files are now hidden in the Gitpod file explorer.
+When they run app option 3 (Record cuttings taken), they are asked to enter a number of cuttings actually taken. They are given the already existing figure for cuttings taken and warned not to enter a number for cuttings unless that number has already been physically taken, prepared and inserted in the cuttings bed. It tells the user when the number of cuttings taken exceeds the number of cuttings planned.
 
-**April 13 2020:** Added the _Prettier_ code beautifier extension instead of the code formatter built-in to Gitpod.
+The new figure entered by the user is added to the already existing number. In the nursery, the cuttings campaign takes several days, the owners typically entering the day's figure for cutting production in the evening of the relevant day. The user receives a message on the command line when the figure exceeds the planned figure. The logic behind the difference between planned figures (each of which simply replaces the previous one) and the actually taken figures is that the latter are usually totted up for each day in the cutting/grafting campaigns, and the user should expect the app to remember the numbers recorded from previous days.
 
-**February 2020:** The initialisation files now _do not_ auto-delete. They will remain in your project. You can safely ignore them. They just make sure that your workspace is configured correctly each time you open it. It will also prevent the Gitpod configuration popup from appearing.
+Option 4 (Record rooted cuttings potted up) instructs the user to enter a figure for the number of successfully rooted cuttings actually potted up. As another figure indicating for work actually done (usually daily), it functions in a similar cumulative way to option 3 (Record cuttings taken, as do all functions designed to record work actually done). It informs the user when the total number of potted cuttings recorded has reached or exceeded the total number of cuttings taken.
 
-**December 2019:** Added Eventyret's Bootstrap 4 extension. Type `!bscdn` in a HTML file to add the Bootstrap boilerplate. Check out the <a href="https://github.com/Eventyret/vscode-bcdn" target="_blank">README.md file at the official repo</a> for more options.
+Option 5 (Plan grafts for this year) displays the number of rootstocks (i.e. the figure for cuttings successfully potted up in the previous year, minus losses, plus gains) asks the user what cultivar they want to graft and how many grafts they want to make of that cultivar. The function keeps a running total of the rootstocks required and issues a notification/warning if and when the total number of planned cuttings exceeds the number of rootstocks available. As the function is about planning numbers, new numbers simply overwrite old ones the second and subsequent time the user runs the option for a particular cultivar.
 
-------
+Option 6 (Record grafts taken) argument asks the user which cultivar they want to record grafts for. The owners typically enter the day's figure for graft production separately for each cultivar in the evening of the relevant day. The user receives a message on the command line if and when any figure exceeds the associated planned figure. As for other options recording work actually done, new figures are added to old figures creating a new total. Each time a grafting session is recorded in this way, the current stock of rootstocks is reduced by the corresponding amount.
 
-## FAQ about the uptime script
+N.B.: In order to record total work done separately from current stocks (i.e., total work done minus losses plus gains) all the following numbers are recorded separately:
 
-**Why have you added this script?**
+cuttings taken vs total rootstocks
+grafts taken vs total plants in stock (recorded for each cultivar separately)
+ad-hoc tasks
+Option 7 (Record plant losses) asks the user the cultivar and age of the plants they want to record as lost (including year-zero rooted cuttings), showing them the current figure for that cultivar and age. The user is prevented from entering a number greater than that figure. It gives a confirmation message before writing the data entered by the user to the spreadsheet.
 
-It will help us to calculate how many running workspaces there are at any one time, which greatly helps us with cost and capacity planning. It will help us decide on the future direction of our cloud-based IDE strategy.
+Option 8 (Record plant gains) works similarly, adding instead of subtracting. It does not impose any restriction on the number added.
 
-**How will this affect me?**
+Option 9 (Hold over plants for one year) asks the user to identify the cultivar and age of the plants they want to hold back, shows the user the current number of those plants and subtracts the number given by the user from the current age category, adding the same number to the category one year younger. As with record_loss, the user can't move more plants than the recorded number for the relevant category in any direction. The system also prevents the user from entering a value less than two, as it is impossible to hold year-one plants over to year-zero. The year zero values are not recorded in the plants worksheet at all. They have ther own worksheet (grafts-year-zero)
 
-For everyday usage of Gitpod, it doesn’t have any effect at all. The script only captures the following data:
+Option 10 (Bring plants forward one year) does the same in the opposite direction. Again, the appropriate restriction on numbers moved applies. In contrast to the previous option, the user can choose the value 1 for year cohort, as the same problem doesn't apply here.
 
-- An ID that is randomly generated each time the workspace is started.
-- The current date and time
-- The workspace status of “started” or “running”, which is sent every 5 minutes.
+In exceptional cases where the user wishes to hold back or bring forward a number of plants by more than a year, they must run the relevant process twice.
 
-It is not possible for us or anyone else to trace the random ID back to an individual, and no personal data is being captured. It will not slow down the workspace or affect your work.
+Unfortunately, due to the time restraints, I was unable to implement option 11 (Add new cultivar). I have, however prepared much of the groundwork to introducing it in the future. For example, I have implemented a system by which the functions that involve cultivars identify those cultivars dynamically.
 
-**So….?**
+Reductions in plant stocks through sales are not recorded in this app. The couple tell me that this may be the next step once they have this work planning system bedded in.
 
-We want to tell you this so that we are being completely transparent about the data we collect and what we do with it.
+The same can be said of a number of other parts of the nursery workflow.
 
-**Can I opt out?**
+Bug fixes and warning resolution
+Bugs
+Bugs were fixed as they arose during smoke testing.
 
-Yes, you can. Since no personally identifiable information is being captured, we'd appreciate it if you let the script run; however if you are unhappy with the idea, simply run the following commands from the terminal window after creating the workspace, and this will remove the uptime script:
+As far as practicable, all Bugs are resolved separately and the Bug resolution is recorded in Git commits separately, prefixing the commit text with "Bug: ".
 
-```
-pkill uptime.sh
-rm .vscode/uptime.sh
-```
+Warnings
+pycodestyle issues (all warnings) were closed shortly before submitting the app project.
 
-**Anything more?**
+Two warnings could not be resolved, but appear not affect the functioning, reading or comprehension of the program in any way! They were:
 
-Yes! We'd strongly encourage you to look at the source code of the `uptime.sh` file so that you know what it's doing. As future software developers, it will be great practice to see how these shell scripts work.
+$ pip install pycodestyle
+$ pycodestyle ...
 
----
+  warnings.warn(
+run.py:318:22: E231 missing whitespace after ':'
+run.py:318:22: E701 multiple statements on one line (colon)
+run.py:428:80: E501 line too long (82 > 79 characters)
+In reality there are at least a dozen warnings relating to lines that are too long, but they do not affect the Heroku pseudo-terminal and do not appear to affect the readability of the code. I corrected them, saw that the caused bugs in the presentation, and even in the running of the code itself, and reversed them (one by one).
 
-Happy coding!
+App robustness
+Numerical vs character/string entries
+Aside from the restrictions on user entries mentioned above, the user must not enter either a negative number or an entry that cannot be rendered as an integer. Sadly, in most cases, I have not had the time to resolve all issues relating to the user entering characters and strings that cannot be converted into integers yet, but I have put the necessary software in place in some functions (notably the opening menu function and functions 6, 7, 8 and 9). I have told the users to be careful not to make non-numerical entries where numerical entries are expected.
+
+Out of range numbers
+The app has been designed so that integers entered outside the valid range of values are handled elegantly without the program havin to shut down. Users are shown an appropriate message repeatedly until they make a valid entry.
+
+Yes or no responses
+The app is designed so that the user can respond to yes or know answers by entering 'y' or 'Y' for yes; entering any other value than 'y' or 'Y' is interpreted as a no.
+
+Programming philosophy
+Being an app generally modelling a procedural series of steps, little use was made of the concepts of OOP in its design. Few custom classes were specifically designed for the app. This was deliberate and should not be taken for any absence of understanding of the basic concepts of OOP. It may, however, be useful to look at other programs created for a similar purpose when the time comes to refactor this code, and to use the advantages of OOD/OOP to make the code more efficient and more comprehensible.
+
+Sharing the hamamelis google spreadsheet
+This section is work in progress.
+
+Registering for Heroku and using it
+This section is work in progress.
+
+Lessons learned
+This section is work in progress.
+
+Other unresolved issues and future development
+This section is work in progress.
+
+Credits
+This section is work in progress.
