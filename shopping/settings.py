@@ -27,7 +27,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu108.gitpod.io', '.herokuapp.com']
 
-
 # Application definition
 
 INSTALLED_APPS = [
