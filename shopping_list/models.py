@@ -38,26 +38,36 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
 
+    def __str2__(self):
+        return self.default_source
+
+
 class List_item(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_of_list_item")
     date_created = models.DateTimeField(auto_now=True)
     bought = models.BooleanField(default=False)
+    cancelled = models.BooleanField(default=False)
     date_bought = models.DateTimeField(default=None, blank=True, null=True)
+    default_source = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="where_to_buy", default=0)
+    actual_source = models.ForeignKey(Shop, on_delete=models.CASCADE, default=None, blank=True, null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_put_item_on_list")
-    shopper = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_bought_item", null=True, blank=True)
+    shopper = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_bought_item", default=None, null=True, blank=True)
     quantity_required = models.IntegerField(default=1)
-    quantity_bought = models.IntegerField(default=1)
+    quantity_bought = models.IntegerField(default=0)
     creator_notes = models.TextField(null=True, blank=True)
     buyer_notes = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ['date_created']
+        verbose_name_plural = "list items"
 
     def __str__(self):
-        return self.product.product_name
+        return f" {self.product.product_name} | ordered by {self.creator}"
 
-    def __str__(category):
+    def __category__(self):
         return self.product.category
 
-    class Meta:
-        verbose_name_plural = "list items"
+    def __default_source__(self):
+        return self.product.default_source
+
+    
