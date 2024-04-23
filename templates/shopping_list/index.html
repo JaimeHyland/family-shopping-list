@@ -1,6 +1,17 @@
+
 {% extends "base.html" %}
 
 {% block content %}
+
+<div class="col-12 mt-3 left">
+  <div class="row">
+    <ul>
+      {% for item in object_list %}
+      <li class="list_item">{{ item.product.product_name }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
 <!-- index.html content starts here -->
 <ul class="list-group">
