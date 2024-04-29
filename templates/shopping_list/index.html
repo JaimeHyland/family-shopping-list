@@ -5,11 +5,20 @@
 
 <div class="col-12 mt-3 left">
   <div class="row">
-    <ul>
-      {% for item in object_list %}
-      <li class="list_item">{{ item.product.product_name }}</li>
-      {% endfor %}
-    </ul>
+    <h1>Current shopping list</h1>
+    <form method="POST" action="{% url 'home' %}">
+      {% csrf_token %}
+      <ul>
+        {% for item in object_list %}
+        <li class="list_item">
+          <input type="checkbox" name="cancelled_items" value="{{ item.id }}">
+          <label for="cancelled_items">Cancel</label>
+            {{ item.product.product_name }}</li>
+          <input type="checkbox" name="completed_items" value="{{ item.id }}">
+          <label for="completed_items">Completed</label>
+        {% endfor %}
+      </ul>
+    </form>
   </div>
 </div>
 
