@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-class ItemList(generic.ListView):
+class ItemListView(generic.ListView):
     queryset = List_item.objects.filter(bought=False)
-    template_name = 'shopping_list/index.html'
+    template_name = 'shopping_list.html'
     paginate_by = 12
     current_list = List_item.objects.all()

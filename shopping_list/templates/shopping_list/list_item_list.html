@@ -6,7 +6,7 @@
 <div class="col-12 mt-3 left">
   <div class="row">
     <h1>Current shopping list</h1>
-    <form method="POST" action="{% url 'home' %}">
+    <form method="POST" action="{% url 'shopping_list' %}">
       {% csrf_token %}
       <ul>
         {% for item in object_list %}
@@ -21,15 +21,4 @@
     </form>
   </div>
 </div>
-
-<!-- index.html content starts here -->
-<ul class="list-group">
-    <li class="list-group-item">An item</li>
-    <li class="list-group-item">A second item</li>
-    <li class="list-group-item">A third item</li>
-    <li class="list-group-item">A fourth item</li>
-    <li class="list-group-item">And a fifth one</li>
-  </ul>
-
-<!-- index.html content ends here -->
 {% endblock %}
