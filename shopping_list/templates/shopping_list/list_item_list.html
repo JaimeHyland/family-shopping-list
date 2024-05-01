@@ -1,24 +1,64 @@
-
 {% extends "base.html" %}
 
 {% block content %}
 
-<div class="col-12 mt-3 left">
-  <div class="row">
-    <h1>Current shopping list</h1>
-    <form method="POST" action="{% url 'shopping_list' %}">
-      {% csrf_token %}
-      <ul>
-        {% for item in object_list %}
-        <li class="list_item">
-          <input type="checkbox" name="cancelled_items" value="{{ item.id }}">
-          <label for="cancelled_items">Cancel</label>
-            {{ item.product.product_name }}</li>
-          <input type="checkbox" name="completed_items" value="{{ item.id }}">
-          <label for="completed_items">Completed</label>
-        {% endfor %}
-      </ul>
-    </form>
+<div class="col-12 mt-3">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="row">
+        <h1 class="mx-auto">Current shopping list</h1>
+      </div>
+      <div class="row">
+        <form method="POST" action="{% url 'shopping_list' %}" class="w-100">
+          {% csrf_token %}
+          <ul class="list-group list-group-flush mx-lg-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <h4>Cancel</h4>
+              <h4>Completed</h4>
+            </li>
+            {% for item in shopping_list %}
+            <li class="list-group-item d-flex justify-content-between align items center">
+              <div>
+                <input type="checkbox" class="cancel-chkbx" name="cancelled_item" value="{{ item.id }}">
+                <div class="empty-block"></div>
+                <span
+                  class="{% if item.is_cancelled %} text-muted {% endif %}"></span>{{ item.product.product_name }}</span>
+              </div>
+              <div>
+                <input type="checkbox" class="completed-chkbx" name="completed_items" value="{{ item.id }}">
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const cancelChkbxs = document.querySelectorAll('.cancel-chkbx');
+    const completedChkbxs = document.querySelectorAll('.completed-chkbx');
+
+    cancelCheckboxes.forEach(function (checkbox) {
+      checkbox.addEventListener('change', function () {
+        const listItem = this.closest('.list-group-item');
+        const productText = listItem.querySelector('span');
+        const completedChkbx = listItem.querySelector('.completed-chkbx');
+
+        if (this.checked) {
+          productText.classList.remove('bold-text');
+          productText.classList.add('text-muted');
+          completedChkbx.disabled = true;
+        } else {
+          productText.classList.remove('text-muted');
+          productText.classList.add('bold-text')
+          completedChkbx.disabled = false;
+        }
+      });
+    });
+  });
+</script>

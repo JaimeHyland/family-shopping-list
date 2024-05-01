@@ -1,11 +1,15 @@
 {% url 'home' as home_url %}
+{% load static %}
 
 <!DOCTYPE html>
 <html class="h-100" lang="en">
 
 <head>
-    <title>CodeStar Blog</title>
+    <title>Hyland shopping list</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Customised CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'shopping_list/styles.css' %}">
 
     <!-- Google Fonts CSS -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
