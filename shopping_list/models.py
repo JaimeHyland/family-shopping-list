@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from tools.utilities import get_current_user
 
 # Create your models here.
 class Shop(models.Model):
     shop_name = models.CharField(max_length=50, null=False, blank=False)
-    creator_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "user_who_created_shop")
+    creator_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "user_who_created_shop", default=get_current_user)
     current = models.BooleanField(default=True)
     notes = models.TextField(null=True, blank=True)
 
@@ -14,7 +15,7 @@ class Shop(models.Model):
 
 class Category(models.Model):
     category_name = models.CharField(max_length=50, null=False, blank=False)
-    creator_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_created_category")
+    creator_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_created_category", default=get_current_user)
     current = models.BooleanField(default=True)
     notes = models.TextField(null=True, blank=True)
 
@@ -28,10 +29,10 @@ class Category(models.Model):
 class Product(models.Model):
     product_name = models.CharField(max_length=50, null=False, blank=False)
     default_quantity = models.IntegerField(null=False, blank=False, default=1)
-    default_unit = models.CharField(max_length=10, null=False, blank=False, default="package")
+    default_unit = models.CharField(max_length=30, null=False, blank=False, default="package")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="product_category", default=0)
     default_source = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="buy_here_if_possible", default=0)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_created_product")
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_who_created_product", default=get_current_user)
     notes = models.TextField(null=True, blank=True)
     current = models.BooleanField(default=True)
 
@@ -59,7 +60,14 @@ class List_item(models.Model):
 
     class Meta:
         ordering = ['date_created']
+        verbose_name = "list item"
         verbose_name_plural = "list items"
+
+    def save(self, *args, **kwargs):
+        if not self.creator:
+            self.creator = get_current_user()
+            print(self.creator)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f" {self.product.product_name} | ordered by {self.creator}"
@@ -69,5 +77,7 @@ class List_item(models.Model):
 
     def __default_source__(self):
         return self.product.default_source
+
+
 
     

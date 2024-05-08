@@ -4,19 +4,12 @@
 
 .empty-block {
     display: inline-block;
-    width: 25px;
+    width: 40px;
     height: 10px;
     margin-bottom: 5px;
 }
 
+
 .bold-text {
     font-weight: bold;
 }
-
-.text-muted {
-    color: #6c757d;
-}
-
-.bought-text {
-    text-decoration: line-through;
-  }
