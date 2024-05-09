@@ -20,17 +20,17 @@
             <li class="list-group-item d-flex justify-content-between align items center">
               <div>
                 <input type="checkbox" class="cancel-chkbx" name="cancelled_item" value="{{ item.id }}"
-                {% if item.cancelled %} checked {% endif %}>
+                {% if item.cancelled %} checked {% endif %} onchange="confirmCancel(this)">
                 <div class="empty-block"></div>
                 <span class="{% if item.cancelled %}text-muted{% endif %}{% if not item.cancelled %}bold-text{% endif %}">{{ item.product.product_name }}</span>
               </div>
               <div>
                 <input type="checkbox" class="completed-chkbx" name="completed_items" value="{{ item.id }}"
-                {% if item.bought %} checked {% endif %}>
+                {% if item.bought %} checked {% endif %} onchange="updateDatabase(this)">
               </div>
             </li>
             {% endfor %}
-            <button type="submit">Confirm changes to database</button>
+            <button type="submit">Refresh shopping list</button>
           </ul>
         </form>
       </div>

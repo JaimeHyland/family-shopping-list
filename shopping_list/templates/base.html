@@ -119,6 +119,21 @@
             });
         });
     });
+
+    function confirmCancel(checkbox) {
+        if (checkbox.checked) {
+            if (confirm("Are you sure you don't want this item bought at this time after all?")) {
+                document.getElementById("shopping-list-form").submit();
+            } else {
+                checkbox.checked = false;
+            }
+        } else {
+            document.getElementById("shopping-list-form").submit();
+        }
+    }
+    function updateDatabase(checkbox) {
+        document.getElementById("shopping-list-form").submit();
+    }
 </script>
 
 </html>
