@@ -21,6 +21,7 @@ from shopping_list import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("accounts/", include("allauth.urls")),
     path('', include('shopping_list.urls')),
     path('<slug:slug>/', views.product_detail, name="product_detail"),
 ]

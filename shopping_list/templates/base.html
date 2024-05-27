@@ -1,5 +1,9 @@
-{% url 'home' as home_url %}
 {% load static %}
+{% url 'home' as home_url %}
+{% url 'account_login' as login_url %}
+{% url 'account_signup' as signup_url %}
+{% url 'account_logout' as logout_url %}
+
 
 <!DOCTYPE html>
 <html class="h-100" lang="en">
@@ -30,7 +34,8 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'shopping_list' %}"><span class="brand"><i class="fa fa-shopping-basket" aria-hidden="true"></i> The Shopping List App</span></a>
+            <a class="navbar-brand" href="{% url 'shopping_list' %}"><span class="brand"><i
+                        class="fa fa-shopping-basket" aria-hidden="true"></i> The Shopping List App</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -42,17 +47,32 @@
                             href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == product_list_url %}active{% endif %}" aria-current="page"
-                            href="#">Products</a>
+                        <a class="nav-link {% if request.path == product_list_url %}active{% endif %}"
+                            aria-current="page" href="#">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == category_list_url %}active{% endif %}" aria-current="page"
-                            href="#">Categories</a>
+                        <a class="nav-link {% if request.path == category_list_url %}active{% endif %}"
+                            aria-current="page" href="#">Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == source_list_url %}active{% endif %}" aria-current="page"
-                            href="#">Sources</a>
+                        <a class="nav-link {% if request.path == source_list_url %}active{% endif %}"
+                            aria-current="page" href="#">Sources</a>
                     </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == logout_url %}active{% endif %}" aria-current="page"
+                            href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == signup_url %}active{% endif %}" aria-current="page"
+                            href="{% url 'account_signup' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == login_url %}active{% endif %}" aria-current="page"
+                            href="{% url 'account_login' %}">Login</a>
+                    </li>
+                    {% endif %}
 
                 </ul>
                 <span class="navbar-text text-muted">
@@ -107,12 +127,12 @@
                 }
             });
 
-            if(checkbox.checked) {
+            if (checkbox.checked) {
                 const listItem = checkbox.closest('.list-group-item');
                 const completedChkbx = listItem.querySelector('.completed-chkbx');
                 completedChkbx.disabled = true;
             }
-            
+
         });
         completedChkbxs.forEach(function (checkbox) {
             checkbox.addEventListener('change', function () {
@@ -142,6 +162,7 @@
             document.getElementById("shopping-list-form").submit();
         }
     }
+
     function updateDatabase(checkbox) {
         document.getElementById("shopping-list-form").submit();
     }
