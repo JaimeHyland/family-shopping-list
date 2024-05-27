@@ -9,83 +9,74 @@ A very common cultivar of H. x intermedia ('Arnold Promise') giving a spectacula
 
 ## The user story
 
-The Hyland family is a four-headed monster that consumes a shocking lot of groceries (especially chocolate) every week. The main shopper in the family (the father of the household ... me) does his best but often finds it difficult to keep track of what's in stock and what's not.  The other three family members (the mother of the household, Annett and the two children, Lily and Jim) often tell him what from their point of view is missing and what new purchases might be appreciated.  They also occasionally do a bit of shopping too!
+The Hyland family is a four-headed monster that consumes a shocking lot of groceries (especially chocolate) every week. The main shopper in the family (the father of the household ... me) does his best but often finds it difficult to keep track of what's in stock and what's not.  The other three family members (the mother of the household, Annett, and the two children, Lily and Jim) often tell him what from their point of view is missing and what new purchases might be appreciated.  They also occasionally do a bit of shopping!
 
 Since I'm currently learning full-stack programming with Code Institute and am required by my course to complete a Full-Stack Web application for my fourth portfolio project, I thought this requirement would provide a good opportunity to develop a basic prototype (or minimally viable product - MVP) of a shopping list app designed specifically for our family needs, for further development at a later date. The objective of this project is therefore to create just such a MVP.
 
+We decided that the MVP should include the following features:
+- The adults (i.e. Annett and myself) should be able to govern which products should be included in shopping lists and which sources (shops, supermarkets, etc.) should be allowed.
+- The children should be able to suggest new products and sources to include in the system, subject to the approval of us two adults.
+- It should be possible to add a description to each suggested and/or approved product.
+- The children should be able to add a description only to a suggested product and should be unable to edit an approved product.
+- It should be possible to add only approved products to the shopping list.
+- Products should be divided into categories and default sources and that the shopping list should be filterable using those categories and defaults.
+- The children should not be able to cancel items from the shopping list but should be able to mark items as bought. The adults should be able to do both.
+- There should be some simple mechanism to control which edits should take priority when more than one person at a time is editing the data.
 
-System design
+## System design
 
-Some flow charts portraying a selection of important witch-hazel worklflows
+Some flow charts portraying a selection of important Hyland family shopping list workflows.
 
-Accordingly, I prepared a series of outline flow charts in consultation with Laura and Donal on the basis of the needs they described to me. Once they'd approved the charts, I began thinking about actually programming the various functionalities.
+I prepared a series of outline flow charts in consultation with Nette on the basis of our family needs and habits. Once we'd agreed the basic processes, I began thinking about how to actually program the various functionalities the family needs in the short term.
 
-For simplicity's sake, and because I thought the data was not enormously complex, I decided to store it all on a single google spreadsheet, which I simply named 'hamamelis'. It contains three worksheets.
+My reasons for choosing a django-based system on a Postgresql database at the back end, with some important appearances from Bootstrap on the front end, were basically twofold:
+- Django offers a seamless way of creating a simple full-stack website quickly and corresponding to the family's needs and habits.
+- The most obvious way of satisfying the requirements of my fourth portfolio project on my Code Institute Full-Stack Programming course was to use Django along with Bootstrap.
 
-rootstock
-grafts-year-zero
-plants
-The data should be read as follows.
+### The database structure
 
-The 'rootstock' worksheet
-The first column (A) is a label to tell the witch-hazel program what year the figures in the corresponding row refer to. The current year is at the top.
-The top figure in the second column (B) shows the number of cuttings that the couple plan to take in the autumn of the current year minus one. The figures below that represent the number of cuttings that the couple planned to take in each relevant year minus one in the past.
-The third column (C) shows the number of cuttings that they actually took in the relevant year.
-The fourth column (D) shows the number of cuttings that rooted successfully and were potted up during the spring. It is a representation of work done, and does not increase when immature rootstocks are acquired from an outside source, nor does it reduce when such rootstocks are lost through disease or damage, or when they are used up to in the grafting process. Notice the change in nomenclature: successfully rooted cuttings begin to be referred to as rootstocks as soon as they've planted in pots (potted up).
-The fifth column (E) contains at most two non-zero values: one in E1, which represents the figure for rootstocks in stock this year to become available for use as next year as rootstocks. It is equivalent to the value in D1 minus any losses and plus any acquisitions. The value in E2 represents the total number of rootstocks now available for use in this year's grafting. Every time a grafting session is recorded, this value goes down by the number of grafts made. Any rootstocks left over after the year's grafting campaign is finished remain in the system until they are set to zero upon creation of a new year. The reason for this is that two-year-old rootstocks will rarely be suitable for grafting when the time comes around again in the new year. They are generally physically disposed of (recycling the pots and compost) when the opportunity arises during the course of the new year. The rootstock worksheet the end of a year
-The rootstock worksheet as it might look towards the end of a growing year
+I decided that the simplest way implementing the above requirements at the back end was to base the system on two main tables:
+- a Product table, listing all the articles approved for inclusion in the shopping list
+- a List Item table, in which a new record is created every time a new item is added to the shopping list by picking a product to be bought
+I decided not to ordinarily delete List Item or Product records, but simply to remove LIst Items from the visible shopping list as they're bought or cancelled. In the case of records on the Product table, they are not shown on the Product list if the value of their 'Current' variable is set to False.
 
-The 'grafts-year-zero' worksheet
-The grafts-year-zero worksheet contains two more columns than the number of cultivars of Hamamelis currently cultivated by the Witch Hazel nursery.
+The other bespoke tables of the database are as follows:
+- Shop
+- Category
 
-The first column identifies the year to which the data in the corresponding row refers.
-The second column tells any human or machine reader whether the figures in the corresponding row refer to numbers of grafted plants that the couple originally planned ('planned'), that they actually made ('grafted') and that they currently have in stock ('stock'). The 'stock' figure for the current year refers to the number of plants of the given category currently in stock (i.e., the number of grafts originally made of the relevant cultivar in the current year minus any losses recorded since then, plus any gains since then). When a new year is created, the relevant numbers are passed into the 'plants' worksheet, three new rows are created for the current year and the figures for 'planned' and 'grafted' for previous years can no longer be edited.
-Each subsequent column gives the figures described above for the cultivar labelled in the topmost cell. The grafts-year-zero worksheet the end of a year
-The grafts-year-zero worksheet as it might look towards the end of a growing year
+For the moment, the purpose of both these tables is simply to allow the user to appropriately filter results for the Product and List Item tables, depending on where they are and what category of shopping they want to buy.
 
-The 'plants' worksheet
-The plants worksheet is a little simpler. It shows the current stocks of each cultivar of each age group – i.e.: the total number of grafts of that age currently in stock, adjusted according to the losses and gains subsequently recorded by the couple in the witch-hazel program using the record_loss, record_gain, hold_back and bring_forward functions (see below). The plants worksheet towards the end of a year
+Their purpose has the potential to expand to provide more information to the family members in the future.
 
-The plants worksheet as it might look towards the end of a growing year
+There are also two tables generic to Django:
+- User
+- Group
 
-The program's original workflow and the technical issues with the technology used
-At the outset of programming, I wanted the app to call a run.py file in the usual way but to attach an argument after a blank space on the command line, depending on the task that the user wished to do at that time. Unfortunately, the Heroku pseudo terminal on which the app is destined to run does not allow the use of command-line arguments (or at least I have been unable to find a way of implementing such a command-line-argument-based design). Due to some issues with my implementation of the Heroku architecture, I discovered this limitation rather late in the day. As a result I was forced redesign the app at the last-minuteto follow a different (and in my opinion much less elegant) logic. Originally, the user would have typed the run.py file name on the terminal, followed by a space and then a short string indicating what they wanted the app to do.
+The purpose of the first of these from our point of view is to manage users and maintain security (so that nobody but family members can access the website), the second (again, from our point of view) is simply to maintain the functional distinction between an adult user and a child.
 
-For example, they would have typed run.py plan_cuttings to plan their campaign of taking and preparing cuttings. But the Heroku pseudo-terminal automatically runs the run.py file without any arguments immediately upon opening, so everything must be based on an argument-free initial call. The description of the workflow below is based on my last-minute changes due to this difficulty. It should be understood, however, that workflow described below was not my first choice.
 
-The time used dealing with this problem at the last minute may have affected some of the finishing work on the program. For example, it was my original intention to connect each task to the next in their logical order, asking the user if they wished to go on to the next task. Sadly, the user now needs to restart the program every time they wish to complete a new task.
+The website's workflow:
+The first thing a user sees on navigating to the website is an login page. Nobody can get any further without logging in. Once logged in, any user in either group should be able to see the full current shopping list in order of entry (oldest first). They should also see several buttons:
+- a button inviting the user to add an item to the shopping list
+- a button inviting the user to filter by category
+- a button inviting the user to filter by shop
 
-The program's workflow:
-Seasonal tasks in order
-Typically towards the autumn of every year, the owners will want to close out the figures they have entered over the previous year, begin a new year and start work on planning their campaign of taking H. Virginiana cuttings. They begin this task by running the app and choosing option 1 (Create new year/Close out current year). This function adds the required new lines for the new current year on each worksheet, and copies the data on graft stocks for the old current year to date from the grafts-year-zero worksheet to the plants worksheet. This has the effect of putting the data for the previous year out of reach of the seasonal tasks.
 
-Also within the Create new year/Close out current year function, users can choose either to enter the figure for cuttings that they anticipate taking this year or opt to leave that job for later.
 
-The rootstock worksheet straight after the user executes the  function
+There should be two checkboxes attached to each item on the shopping list, though only one of them will be enabled for child users:
+- a Cancel Item checkbox on the left, which should only be enabled for adults
+- an Item Bought checkbox on the right, which everyone should be able to check
 
-The rootstock worksheet straight after the user executes the Create new year/Close out current year function. Note that the user has chosen to enter a value for planned cuttings of 2800. That value can be changed at any time during the year by running Option 2 Plan this year's cutting campaign.
+When an adult checks the "Cancel Item" checkbox, the text for the item is shown in grey and the Item Bought checkbox is disabled.
+When anyone checks the "Item Bought" checkbox, the text for the item is shown in strikethrough font and the Cancel Item checkbox is disabled (if it's not already disabled).
 
-The grafts-year-zero worksheet straight after the user executes the  function
+Anyone who double clicks on an item text will be brought to an Item Details screen, where they can see further details on the Item. Adults can edit these details.
 
-The grafts-year-zero worksheet straight after the user executes the Create new year/Close out current year function.
 
-The plants worksheet straight after the user executes the  function
+Once users are logged in, they are immediately shown the full list of current items on the shopping list. The page also contains buttons allowing them to do the following:
+- filter the list by category and shop
+-
 
-The plants worksheet straight after the user executes the Create new year/Close out current year function.
-
-Then, whether or not they have entered a figure for planned cuttings, they can run app option 2 Plan this year's cutting campaign to revise that figure. If they have already recorded a figure for cuttings actually made, they are given a warning to tell them that the cutting campaign has already started and asked to confirm whether they want to replace the planned figure with a new total. The new figure is not added to the old one; it simply replaced it. This is the case with all planning functions.
-
-When they run app option 3 (Record cuttings taken), they are asked to enter a number of cuttings actually taken. They are given the already existing figure for cuttings taken and warned not to enter a number for cuttings unless that number has already been physically taken, prepared and inserted in the cuttings bed. It tells the user when the number of cuttings taken exceeds the number of cuttings planned.
-
-The new figure entered by the user is added to the already existing number. In the nursery, the cuttings campaign takes several days, the owners typically entering the day's figure for cutting production in the evening of the relevant day. The user receives a message on the command line when the figure exceeds the planned figure. The logic behind the difference between planned figures (each of which simply replaces the previous one) and the actually taken figures is that the latter are usually totted up for each day in the cutting/grafting campaigns, and the user should expect the app to remember the numbers recorded from previous days.
-
-Option 4 (Record rooted cuttings potted up) instructs the user to enter a figure for the number of successfully rooted cuttings actually potted up. As another figure indicating for work actually done (usually daily), it functions in a similar cumulative way to option 3 (Record cuttings taken, as do all functions designed to record work actually done). It informs the user when the total number of potted cuttings recorded has reached or exceeded the total number of cuttings taken.
-
-Option 5 (Plan grafts for this year) displays the number of rootstocks (i.e. the figure for cuttings successfully potted up in the previous year, minus losses, plus gains) asks the user what cultivar they want to graft and how many grafts they want to make of that cultivar. The function keeps a running total of the rootstocks required and issues a notification/warning if and when the total number of planned cuttings exceeds the number of rootstocks available. As the function is about planning numbers, new numbers simply overwrite old ones the second and subsequent time the user runs the option for a particular cultivar.
-
-Option 6 (Record grafts taken) argument asks the user which cultivar they want to record grafts for. The owners typically enter the day's figure for graft production separately for each cultivar in the evening of the relevant day. The user receives a message on the command line if and when any figure exceeds the associated planned figure. As for other options recording work actually done, new figures are added to old figures creating a new total. Each time a grafting session is recorded in this way, the current stock of rootstocks is reduced by the corresponding amount.
-
-N.B.: In order to record total work done separately from current stocks (i.e., total work done minus losses plus gains) all the following numbers are recorded separately:
 
 cuttings taken vs total rootstocks
 grafts taken vs total plants in stock (recorded for each cultivar separately)

@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .models import List_item
+from .models import List_item, Product
 from django.contrib.auth.decorators import login_required
 from tools.utilities import get_current_user
+
 
 # Create your views here.
 
@@ -27,4 +28,7 @@ class ItemListView(generic.ListView):
         return redirect('shopping_list')
 
 
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    return render(request, 'shopping_list/product_detail.html', {'product': product})
     

@@ -28,6 +28,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     product_name = models.CharField(max_length=50, null=False, blank=False)
+    slug = models.SlugField(blank=True, null=True)
     default_quantity = models.IntegerField(null=False, blank=False, default=1)
     default_unit = models.CharField(max_length=30, null=False, blank=False, default="package")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="product_category", default=0)
@@ -36,6 +37,17 @@ class Product(models.Model):
     notes = models.TextField(null=True, blank=True)
     current = models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.product_name)
+            slug = base_slug
+            counter = 1
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.product_name
 
