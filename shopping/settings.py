@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu110.gitpod.io', '8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu111.gitpod.io', '8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu112.gitpod.io', '8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu114.gitpod.io', '.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1','8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu110.gitpod.io', '8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu111.gitpod.io', '8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu112.gitpod.io', '8000-jaimehyland-familyshopp-g4ko0c0fa1i.ws-eu114.gitpod.io', '.herokuapp.com']
 
 # Application definition
 
@@ -48,7 +48,18 @@ INSTALLED_APPS = [
 
     # My apps
     'shopping_list',
+
+    # Channels to facilitate push notifications
+    'channels',
 ]
+
+# Channels settings
+ASGI_APPLICATION = 'shopping.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'

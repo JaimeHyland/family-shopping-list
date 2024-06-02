@@ -22,6 +22,8 @@ We decided that the MVP should include the following features:
 - Products should be divided into categories and default sources and that the shopping list should be filterable using those categories and defaults.
 - The children should not be able to cancel items from the shopping list but should be able to mark items as bought. The adults should be able to do both.
 - There should be some simple mechanism to control which edits should take priority when more than one person at a time is editing the data.
+- There should be no mechanism for outsiders to register to use the app. The superuser should the only person(s) able to add or delete a user from the app.
+- Anyone not logged in or stumbling on the site accidentally (or maliciously!!) should see a page asking them to log in. If they can't log in, then the simply don't get to see the shopping list.
 
 ## System design
 
