@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from shopping_list import views
+from shopping_list.views import ItemListView
 
 
 urlpatterns = [
@@ -24,5 +24,5 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path('', ItemListView.as_view(), name='shopping_list'),
     # path('', include('shopping_list.urls')),
-    path('<slug:slug>/', views.ItemListView.product_detail, name="product_detail"),
+    path('<slug:slug>/', ItemListView.product_detail, name="product_detail"),
 ]
