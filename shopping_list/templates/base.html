@@ -102,7 +102,9 @@
 </body>
 
 <script>
+    // Change presentation of list item texts when user changes its status to cancelled or bought.
     document.addEventListener('DOMContentLoaded', function () {
+        
         const cancelChkbxs = document.querySelectorAll('.cancel-chkbx');
         const completedChkbxs = document.querySelectorAll('.completed-chkbx');
 
@@ -147,25 +149,65 @@
         });
     });
 
+    function getCSRFToken() {
+        console.log("Bugfix: getCSRFToken function called");
+        let name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue; 
+    }
+
     function confirmCancel(checkbox) {
+        console.log("Bugfix: confirmCancel function called");
         if (checkbox.checked) {
             if (confirm("Are you sure you don't want this item bought at this time after all?")) {
-                console.log(`Checkbox value: ${checkbox.checked}`)
-                updateDatabase(checkbox);
-                document.getElementById("shopping-list-form").submit();
+                console.log(`Bugfix: Checkbox value: ${checkbox.checked}`)
+                submitForm();
                 
             } else {
                 checkbox.checked = false;
             }
         } else {
-            document.getElementById("shopping-list-form").submit();
+            submitForm();
         }
     }
 
     function updateDatabase(checkbox) {
-        console.log(`Bugfix: ${document.getElementById.name}`);
-        document.getElementById("shopping-list-form").submit();
+        console.log("Bugfix: submitForm function called")
+        submitForm;
     }
+
+    function submitForm() {
+    console.log("bugfix: submitForm function called");
+    let form = document.getElementById("shopping-list-form");
+    let formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            console.log('Form submitted successfully');
+        } else {
+            console.error('Form submission failed', response.status);
+        }
+    }).catch(error => {
+        console.error('Form submission error', error);
+    });
+}
+
 
     // Check whether current location protocol is secure or not and define WebSocket protocol accordingly.
 
@@ -180,7 +222,9 @@
         const data = JSON.parse(event.data);
         console.log(data.message);
         // Update the DOM with new data
-        location.reload();
+        if (data.message === 'Shopping list updated') {
+            location.reload();
+        }
     };
 
     socket.onerror = function(error) {

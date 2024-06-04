@@ -46,11 +46,12 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
+
+# Channels to facilitate push notifications
+    'channels',
+    
     # My apps
     'shopping_list',
-
-    # Channels to facilitate push notifications
-    'channels',
 ]
 
 # Channels settings

@@ -13,10 +13,10 @@
           {% csrf_token %}
           <ul class="list-group list-group-flush mx-lg-3">
             <li class="list-group-item d-flex justify-content-between align-items-center">
-              <h4>Cancelled</h5>
-                <h4>Bought</h5>
+              <h4>Cancelled</h4>
+                <h4>Bought</h4>
             </li>
-            {% for item in shopping_list %}
+            {% for item in items %}
             <li class="list-group-item d-flex justify-content-between align items center">
               <div>
                 <input type="checkbox" class="cancel-chkbx" name="cancelled_item" value="{{ item.id }}"
