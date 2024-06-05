@@ -20,15 +20,16 @@ class ShoppingListView(View):
         return render(request, 'shopping_list/shopping_list.html', {'shopping_list': shopping_list})
 
     def post(self, request, *args, **kwargs):
+        print(f"Bugfix in ShoppingListView: POST request data: {request.POST}")
+        print(f"Bugfix in ShoppingListView: POST item_id: {request.POST.get('item_id')}")
+        print(f"Bugfix in ShoppingListView: POST action: {request.POST.get('action')}")
         try:
-            print(f"Bugfix: POST request data: {request.POST}")
-            print(f"Bugfix: POST item_id: {request.POST.get('item_id')}")
-            print(f"Bugfix: POST action: {request.POST.get('action')}")
+            
             item_id = request.POST.get('item_id')
             action = request.POST.get('action')
 
             if not item_id or not action:
-                print("Invalid request: Missing item_id or action")
+                print("Bugfix: Invalid request: Missing item_id or action")
                 return HttpResponseBadRequest("Invalid request: Missing item_id or action")
 
             item = get_object_or_404(List_item, id=item_id)
@@ -37,9 +38,9 @@ class ShoppingListView(View):
                 item.cancelled = True
             elif action == 'uncancel':
                 item.cancelled = False
-            elif action == 'bought':
+            elif action == 'buy':
                 item.bought = True
-            elif action == 'unbought':
+            elif action == 'unbuy':
                 item.bought = False
             else:
                 return HttpResponseBadRequest("Invalid request: Unknown action")

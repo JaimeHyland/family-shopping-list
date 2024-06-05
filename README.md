@@ -19,9 +19,9 @@ We decided that the MVP should include the following features:
 - It should be possible to add a description to each suggested and/or approved product.
 - The children should be able to add a description only to a suggested product and should be unable to edit an approved product.
 - It should be possible to add only approved products to the shopping list.
-- Products should be divided into categories and default sources and that the shopping list should be filterable using those categories and defaults.
+- Products should be divided into categories and default sources and the shopping list should be filterable using those categories and defaults.
 - The children should not be able to cancel items from the shopping list but should be able to mark items as bought. The adults should be able to do both.
-- There should be some simple mechanism to control which edits should take priority when more than one person at a time is editing the data.
+- There should be some mechanism to control which edits should take priority when more than one person at a time is editing the data.
 - There should be no mechanism for outsiders to register to use the app. The superuser should the only person(s) able to add or delete a user from the app.
 - Anyone not logged in or stumbling on the site accidentally (or maliciously!!) should see a page asking them to log in. If they can't log in, then the simply don't get to see the shopping list.
 
@@ -57,11 +57,26 @@ There are also two tables generic to Django:
 The purpose of the first of these from our point of view is to manage users and maintain security (so that nobody but family members can access the website), the second (again, from our point of view) is simply to maintain the functional distinction between an adult user and a child.
 
 
-The website's workflow:
-The first thing a user sees on navigating to the website is an login page. Nobody can get any further without logging in. Once logged in, any user in either group should be able to see the full current shopping list in order of entry (oldest first). They should also see several buttons:
+## The website's workflow:
+
+### Logging in
+The first thing a user sees on navigating to the website is an login page. Nobody can get any further without logging in. Users can set the App to remember them (i.e. not to require a new log-in when a new instance of the App is started up on the same device). Once logged in, any user in either group should be able to see the full current shopping list in order of entry (oldest first).
+
+### Cancelling list items
+Each item on the shopping list will have two checkboxes to the left and right. The left-hand one will have the effect of cancelling the item from the list after the user clicks a confirm message. This will be visually marked by displaying the item in a paler colour and disabling the "bought" checkbox. The cancellation can be undone by clicking or tapping the same checkbox again.
+
+### Buying list items
+The right-hand checkbox marks the corresponding list item as having been bought. In this case, to facilitate the user's shopping efficiency, no confirmation message is required. The item text is displayed as bought by striking it through with a semi-transparent line, as if it had been marked off using a blunt pencil. If the checkbox is checked by accident, it can be unchecked again in the usual way.
+
+### App database update policy for checkbox changes
+Changes to the checkboxes are written directly to the database. I hope to complete a notification system using Django Channels and WebSockets to ensure that users are informed when someone else has updated data currently on their screen, to minimise the risk of data becoming inconsistent due to parallel usage of the app.
+
+
+They should also see several buttons:
 - a button inviting the user to add an item to the shopping list
-- a button inviting the user to filter by category
-- a button inviting the user to filter by shop
+- a button inviting the user to filter either by category or by shop
+- a button inviting the user refresh the view, so that newly cancelled 
+
 
 
 

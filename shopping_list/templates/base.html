@@ -163,50 +163,79 @@
                 }
             }
         }
+        console.log(`Debug - cookieValue: ${cookieValue}`)
         return cookieValue; 
     }
 
-    function confirmCancel(checkbox) {
-        console.log("Bugfix: confirmCancel function called");
-        if (checkbox.checked) {
+    function confirmCancelUncancel(checkbox, itemId) {
+        console.log(`Bugfix: in confirmCancelUncancel! checked: ${checkbox.checked}`);
+        if (checkbox.checked == true) {
             if (confirm("Are you sure you don't want this item bought at this time after all?")) {
-                console.log(`Bugfix: Checkbox value: ${checkbox.checked}`)
-                submitForm();
-                
+                checkbox.checked == true
+                updateDatabase(checkbox, itemId);
             } else {
-                checkbox.checked = false;
+                checkbox.checked == false;
+                updateDatabase(checkbox, itemId);
             }
         } else {
-            submitForm();
+            checkbox.checked == false;
+            updateDatabase(checkbox, itemId);
         }
     }
 
-    function updateDatabase(checkbox) {
-        console.log("Bugfix: submitForm function called")
-        submitForm;
+    function updateDatabase(checkbox, itemId) {
+        console.log(`Bugfix: in updateDatabase at beginning! checked: ${checkbox.checked}`);
+        let action;
+
+        if (checkbox.name === 'cancelled_item') {
+            action = checkbox.checked ? 'cancel' : 'uncancel';
+        } else {
+            action = checkbox.checked ? 'buy' : 'unbuy';
+        }
+        console.log(`Bugfix: in updateDatabase after if clause: Action ${action}`)
+        updateForm(itemId, action);
+        submitForm();
     }
 
     function submitForm() {
-    console.log("bugfix: submitForm function called");
-    let form = document.getElementById("shopping-list-form");
-    let formData = new FormData(form);
-
-    fetch(form.action, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCSRFToken()
-        },
-        body: formData
-    }).then(response => {
-        if (response.ok) {
-            console.log('Form submitted successfully');
-        } else {
-            console.error('Form submission failed', response.status);
+        console.log("Bugfix: in submitForm");
+        let form = document.getElementById("shopping-list-form");
+        let formData = new FormData(form); 
+        // Remove cancelled_item from formData
+        formData.delete('cancelled_item');
+        // Bugfix
+        console.log("Bugfix: formData values: ");
+        for (let [key, value] of formData.entries()) {
+        console.log(`Bugfix: in submitForm! Action: ${form.getAttribute('action')}`)
         }
-    }).catch(error => {
-        console.error('Form submission error', error);
-    });
-}
+
+        fetch(form.getAttribute('action'), {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCSRFToken()
+                
+            },  
+        })
+        
+        .then(response => {
+            if (response.ok) {
+                console.log('Form submitted successfully');
+            }
+            else {
+                console.error('Form submission failed', response.status);
+            }
+        })
+        .catch(error => {
+            console.error('Form submission error', error);
+        });
+    }
+
+    function updateForm(itemId, action) {
+        console.log(`Bugfix: in updateForm! Action: ${action}`);
+        document.getElementById('item-id').value = itemId;
+        document.getElementById('action-type').value = action;
+    }
 
 
     // Check whether current location protocol is secure or not and define WebSocket protocol accordingly.

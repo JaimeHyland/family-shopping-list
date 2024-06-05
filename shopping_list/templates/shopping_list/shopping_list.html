@@ -11,6 +11,9 @@
       <div class="row">
         <form id="shopping-list-form" method="POST" action="{% url 'shopping_list' %}" class="w-100">
           {% csrf_token %}
+          <!-- Input types to be dynamically defined in javascript and parsed as appropriate in the ShoppingListView.post() method -->
+          <input type="hidden" id="item-id" name="item_id" value="">
+          <input type="hidden" id="action-type" name="action" value="">
           <ul class="list-group list-group-flush mx-lg-3">
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <h4>Cancelled</h4>
@@ -20,7 +23,7 @@
             <li class="list-group-item d-flex justify-content-between align items center">
               <div>
                 <input type="checkbox" class="cancel-chkbx" name="cancelled_item" value="{{ item.id }}"
-                  {% if item.cancelled %} checked {% endif %} onchange="confirmCancel(this)">
+                  {% if item.cancelled %} checked {% endif %} onchange="confirmCancelUncancel(this, '{{ item.id }}')">
                 <div class="empty-block"></div>
                 <span class="{% if item.cancelled %}text-muted{% endif %}{% if not item.cancelled %}bold-text{% endif %}">
                   <a class="link-success link-opacity-30-hover link-underline-opacity-10"
@@ -28,7 +31,7 @@
               </div>
               <div>
                 <input type="checkbox" class="completed-chkbx" name="completed_items" value="{{ item.id }}"
-                  {% if item.bought %} checked {% endif %} onchange="updateDatabase(this)">
+                  {% if item.bought %} checked {% endif %} onchange="updateDatabase(this, '{{ item.id }}')">
               </div>
             </li>
             {% endfor %}
