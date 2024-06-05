@@ -15,7 +15,7 @@ from tools.utilities import get_current_user
 @method_decorator(login_required, name='dispatch')
 class ShoppingListView(View):
     def get(self, request, *args, **kwargs):
-        shopping_list = List_item.objects.filter(bought=False)
+        shopping_list = List_item.objects.filter(bought=False).order_by(item_id)
         print(f"Bugfix: GET request by bought status. Items: {shopping_list}")
         return render(request, 'shopping_list/shopping_list.html', {'shopping_list': shopping_list})
 
