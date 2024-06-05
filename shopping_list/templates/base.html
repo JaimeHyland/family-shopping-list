@@ -150,7 +150,6 @@
     });
 
     function getCSRFToken() {
-        console.log("Bugfix: getCSRFToken function called");
         let name = 'csrftoken';
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -163,12 +162,10 @@
                 }
             }
         }
-        console.log(`Debug - cookieValue: ${cookieValue}`)
         return cookieValue; 
     }
 
     function confirmCancelUncancel(checkbox, itemId) {
-        console.log(`Bugfix: in confirmCancelUncancel! checked: ${checkbox.checked}`);
         if (checkbox.checked == true) {
             if (confirm("Are you sure you don't want this item bought at this time after all?")) {
                 checkbox.checked == true
@@ -184,7 +181,7 @@
     }
 
     function updateDatabase(checkbox, itemId) {
-        console.log(`Bugfix: in updateDatabase at beginning! checked: ${checkbox.checked}`);
+
         let action;
 
         if (checkbox.name === 'cancelled_item') {
@@ -192,21 +189,16 @@
         } else {
             action = checkbox.checked ? 'buy' : 'unbuy';
         }
-        console.log(`Bugfix: in updateDatabase after if clause: Action ${action}`)
         updateForm(itemId, action);
         submitForm();
     }
 
     function submitForm() {
-        console.log("Bugfix: in submitForm");
         let form = document.getElementById("shopping-list-form");
         let formData = new FormData(form); 
         // Remove cancelled_item from formData
         formData.delete('cancelled_item');
-        // Bugfix
-        console.log("Bugfix: formData values: ");
         for (let [key, value] of formData.entries()) {
-        console.log(`Bugfix: in submitForm! Action: ${form.getAttribute('action')}`)
         }
 
         fetch(form.getAttribute('action'), {
@@ -232,7 +224,6 @@
     }
 
     function updateForm(itemId, action) {
-        console.log(`Bugfix: in updateForm! Action: ${action}`);
         document.getElementById('item-id').value = itemId;
         document.getElementById('action-type').value = action;
     }
