@@ -3,8 +3,8 @@ name: IDE Setup
 about: This template records tasks required to set up and adapt the IDE so that the
   developer can create the app
 title: ''
-labels: ''
-assignees: ''
+labels: set-up
+assignees: JaimeHyland
 
 ---
 

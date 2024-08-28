@@ -1,14 +1,15 @@
 ---
 name: User Story Template
 about: This template is used to help the developer to set up User Stories on the Kanban
-title: User story
+title: 'User story: [title]'
 labels: ''
-assignees: ''
+assignees: JaimeHyland
 
 ---
 
 As a **role** I can **capability** so that **received benefit**.
 
-- Acceptance Criterion 1
-- Acceptance Criterion 2
-- Acceptance Criterion 3
+**Acceptance Criteria**
+- AC1:
+- AC2:
+- AC3:

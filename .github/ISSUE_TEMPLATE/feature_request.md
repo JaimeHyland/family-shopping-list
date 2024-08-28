@@ -1,9 +1,9 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
+about: Template for suggested new feature or improvement in the current app
+title: 'New Feature: [title]'
+labels: enhancement
+assignees: JaimeHyland
 
 ---
 
